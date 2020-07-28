@@ -49,53 +49,55 @@
           for (let x of target) {
             if (test.includes(x)) {
               correct.push(target[target.indexOf(x)]);
-              // if (correct.length == 1 && test.indexOf(x) > 0) {
-              //   pre = test.slice(0, test.indexOf(x));
-              // }
-              // if (correct.length == 1 && test.indexOf(x) == 0) {
-              //   pre = [];
-              //   console.log("fresh start");
-              // }
-              // if (
-              //   test.lastIndexOf(correct[correct.length - 1]) <
-              //   test.length - 1
-              // ) {
-              //   test.splice(0, test.indexOf(correct[0]));
-              //   console.log(correct, test);
-              //   post = test.slice(
-              //     test.indexOf(correct[correct.length - 1]) + 1,
-              //     test.length
-              //   );
-              // }
-              // if (
-              //   test.indexOf(correct[correct.length - 1]) + 1 ==
-              //   test.length - 1
-              // ) {
-              //   console.log(
-              //     "clear post",
-              //     test.indexOf(correct[correct.length - 1])
-              //   );
-              //   post = [];
-              // }
-              // if (correct.length == 1 && test.indexOf(x) > 0) {
-              //   pre = test.slice(0, test.indexOf(x));
-              //   // console.log(pre);
-              // }
-              // if (test.indexOf(x) + 1 == test.length - 1) {
-              //   post = [];
-              // }
-              // if (test.lastIndexOf(x) < test.length - 1) {
-              //   post = test.slice(correct[correct.length - 1]);
-              //   console.log(post);
-              // }
             }
           }
-          h1.innerHTML =
-            pre.join(" ").fontcolor("red") +
-            " " +
-            correct.join(" ").fontcolor("#00e500") +
-            " " +
-            post.join(" ").fontcolor("red");
+          let last = test
+            .map((elem, i) => (elem === correct[correct.length - 1] ? i : ""))
+            .filter((x) => x)
+            .sort((a, b) => a - b);
+          let first = test
+            .map((elem, i) => (elem === correct[0] ? i : ""))
+            .filter((x) => x)
+            .sort((a, b) => a - b);
+          let sec = test
+            .map((elem, i) => (elem === correct[1] ? i : ""))
+            .filter((x) => x)
+            .sort((a, b) => a - b);
+          let avg = test
+            .map((elem, i) => (elem === correct[correct.length - 2] ? i : ""))
+            .filter((x) => x)
+            .sort((a, b) => a - b);
+          for (let l of last) {
+            for (let a of avg) {
+              if (l == test.length - 1 && l == a + 1) {
+                console.table([first, sec, avg, last]);
+                post = [];
+                pre = test.slice(0, first[first.length - 1]);
+                console.log(pre, l, a);
+              }
+              for (let s of sec) {
+                for (let f of first) {
+                  if (l - a == 1 && s - f == 1) {
+                    post = test.slice(l + 1, test.length);
+                    console.log("post", post, l);
+                    pre = test.slice(0, f);
+                  }
+                }
+              }
+            }
+          }
+          if (test[0] == correct[0]) {
+            post = test.slice(correct.length, test.length);
+            console.log(post, correct);
+          }
+          if (post.length >= 1 || pre.length > 1) {
+            h1.innerHTML =
+              pre.join(" ").fontcolor("red") +
+              " " +
+              correct.join(" ").fontcolor("#00e500") +
+              " " +
+              post.join(" ").fontcolor("red");
+          }
         }
       });
       recognition.addEventListener("end", recognition.start);
