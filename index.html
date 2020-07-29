@@ -3,12 +3,20 @@
   <head>
     <meta charset="UTF-8" />
     <title>Speech Detection</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
   </head>
   <body>
-    <div class="words" contenteditable></div>
+    <div id="test">
+      <i class="fa fa-repeat fa-2x" aria-hidden="true" id="btn"></i>
+      <div class="words" contenteditable></div>
+    </div>
     <h1>
-      بسم الله الرحمن الرحيم قل هو الله احد الله الصمد لم يلد ولم يولد ولم يكن
-      له كفوا احد
+      بسم الله الرحمن الرحيم الحمد لله رب العالمين الرحمن الرحيم مالك يوم الدين
+      اياك نعبد واياك نستعين اهدنا الصراط المستقيم صراط الذين انعمت عليهم غير
+      المغضوب عليهم ولا الضالين
     </h1>
     <script>
       window.SpeechRecognition =
@@ -18,9 +26,12 @@
       //   recognition.continuous = true;
       recognition.interimResults = true; // Temperoray results
       let p = document.createElement("p");
-      const words = document.querySelector(".words");
-      const h1 = document.querySelector("h1");
-      const test = h1.innerHTML
+      let words = document.querySelector(".words");
+      let verse = document.querySelector("h1").innerHTML;
+
+      let h1 = document.querySelector("h1");
+      let btn = document.querySelector("#btn");
+      let test = h1.innerHTML
         .replace(/\n/g, "")
         .trim()
         .split(" ")
@@ -31,6 +42,7 @@
       let correct = [];
       let post = [];
       words.appendChild(p);
+
       recognition.addEventListener("result", (e) => {
         const transcript = Array.from(e.results)
           .map((result) => result[0])
@@ -86,9 +98,15 @@
               }
             }
           }
+          if (sec.length == 0 && first.length >= 1) {
+            for (let f of first) {
+              pre = test.slice(0, first[first.length - 1]);
+              post = test.slice(first[first.length - 1] + 1, test.length);
+            }
+          }
           if (test[0] == correct[0]) {
             post = test.slice(correct.length, test.length);
-            console.log(post, correct);
+            // console.log(post, correct);
           }
           if (post.length >= 1 || pre.length > 1) {
             h1.innerHTML =
@@ -98,15 +116,33 @@
               " " +
               post.join(" ").fontcolor("red");
           }
+          if (correct.length == test.length) {
+            h1.innerHTML = correct.join(" ").fontcolor("#00e500");
+          }
         }
       });
-      recognition.addEventListener("end", recognition.start);
+      btn.addEventListener("click", () => {
+        h1.innerHTML = verse;
+        // test = [];
+        target = [];
+        pre = [];
+        correct = [];
+        post = [];
+        p.innerHTML = "";
+        recognition.start();
+      });
+      recognition.addEventListener("end", recognition.stop);
       recognition.start();
     </script>
 
     <style>
-      html {
-        font-size: 10px;
+      #test {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      #test i:hover {
+        color: white;
       }
       body {
         background: #ffc600;
@@ -117,7 +153,8 @@
       }
       .words {
         max-width: 500px;
-        margin: 50px auto;
+        width: 100%;
+        margin: 50px 25px;
         background: white;
         border-radius: 5px;
         box-shadow: 10px 10px 0 rgba(0, 0, 0, 0.1);
